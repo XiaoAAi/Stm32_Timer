@@ -5,7 +5,7 @@
 
 
 //定时器中断优先级设置使能位
-#define TIM2_CONFIG_ENABLED     (1)
+#define TIM2_CONFIG_ENABLED     (0)
 #define TIM3_CONFIG_ENABLED     (1)
 
 

@@ -8,8 +8,8 @@
 
 
 //定义配置使能
-#define USART1_CONFIG_ENABLED                (1)
-#define USART2_CONFIG_ENABLED                (1)
+#define USART1_CONFIG_ENABLED                (0)
+#define USART2_CONFIG_ENABLED                (0)
 #define USART3_CONFIG_ENABLED                (0)
 
 

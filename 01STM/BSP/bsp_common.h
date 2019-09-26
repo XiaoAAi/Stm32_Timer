@@ -20,6 +20,8 @@ typedef enum
 #include "bsp_timer.h"
 #include "bsp_delay.h"
 #include "bsp_sys.h"
+#include "bsp_i2c.h"
+#include "bsp_at24x.h"
 
 
 

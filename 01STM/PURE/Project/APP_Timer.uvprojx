@@ -476,6 +476,26 @@
               <FileType>1</FileType>
               <FilePath>..\User\stm32f10x_it.c</FilePath>
             </File>
+            <File>
+              <FileName>bsp_i2c.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\BSP\bsp_i2c.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_i2c.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\BSP\bsp_i2c.h</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_at24x.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\BSP\bsp_at24x.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_at24x.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\BSP\bsp_at24x.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

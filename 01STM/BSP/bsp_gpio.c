@@ -1,7 +1,6 @@
 #include "bsp_common.h"
 
 
-
 void GPIO_Configure(void)
 {
     GPIO_InitTypeDef GPIO_InitStructure;

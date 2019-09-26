@@ -29,7 +29,6 @@ void TIM2_IRQHandler(void)   //TIM3中断
 #endif
 
 #if  TIM3_CONFIG_ENABLED
-u8 cntDebugLed = 0;
 
 void TIM3_Int_Init(u16 arr, u16 psc)
 {
@@ -47,19 +46,28 @@ void TIM3_Int_Init(u16 arr, u16 psc)
 
 }
 
-
-//功能：定时器3中断服务程序
+#define  VALUE_TIMEOUT		20
+//功能：定时器3中断服务程序  500ms
 void TIM3_IRQHandler(void)   //TIM3中断
 {
+	static u8 cntDebugLed = 0;		//调试灯计数
+	static u8 cntTimeOut = 0;		//超时计
     if(TIM_GetITStatus(TIM3, TIM_IT_Update) != RESET)  //检查指定的TIM中断发生与否:TIM 中断源
     {
 		//调试灯
-		if(cntDebugLed++ > 5)
+		if(++cntDebugLed > 5)
 		{
 			cntDebugLed = 0;
 			LED_SWITCH();			
 		}
-				
+
+		//每 VALUE_TIMEOUT 秒 将EEPROM进行一次写入
+		if(++cntTimeOut > VALUE_TIMEOUT){
+			cntTimeOut = 0;
+			//写入EEPROM
+			
+		}
+		
         TIM_ClearITPendingBit(TIM3, TIM_IT_Update);    //清除TIMx的中断待处理位:TIM 中断源
 	}
 }

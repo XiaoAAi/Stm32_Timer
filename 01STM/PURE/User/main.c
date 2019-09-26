@@ -6,7 +6,7 @@ int main(void)
     GPIO_Configure();
     USART_Configure();
     NVIC_Configure();
-	TIM3_Int_Init(999, 7199);	//100ms
+	TIM3_Int_Init(4999, 7199);	//500ms
 
 	while(1)
 	{		

@@ -134,41 +134,31 @@ void AT24CXX_Write(u16 WriteAddr,u8 *pBuffer,u16 NumToWrite)
 }
  
 //============================执行程序========================
-u8 addr_1st = BYTE_FIRST_CNT;			//存储第一个字节的地址/位置
+//u8 addr_1st = BYTE_FIRST_CNT;			//存储第一个字节的地址/位置
 u8 timer_value[6] = {0};	//存储计数器的值  高位在前低位在后
-u32 Threshold_value = 0;	//警告阈值判断	高32bit判断
-u16 threshold_low = 0;		//警告低16bit值判断
+u32 threshold_value = 0;	//警告阈值判断	高32bit判断
+bool flag_save_eeprom = FALSE;	//存储EEPROM标志
+#define WRITE_OUT_1W	40	//40*255 = 10200次
 
-//功能：EEPROM存储->先读取判断再写入
+//功能：EEPROM存储
 void EEPROMReadSaveCol(void)
 {
+	u8 addr_1st = AT24CXX_ReadOneByte(EE_BYTE_1st_LOCAL);
 	u8 temp = AT24CXX_ReadOneByte(addr_1st);
-	AT24CXX_WriteOneByte(addr_1st, (temp+1));
+	AT24CXX_WriteOneByte(addr_1st, (temp + 1) % 0xFF);
 	if(temp == 0xFF){	
 		temp = AT24CXX_ReadOneByte(EE_BYTE_2nd);
-		AT24CXX_WriteOneByte(EE_BYTE_2nd, (temp + 1));
-		if(temp == 0xFF){
+		AT24CXX_WriteOneByte(EE_BYTE_2nd, (temp + 1) % 0xFF);
+		if(temp == 0xFF){
+	
 			temp = AT24CXX_ReadOneByte(EE_BYTE_3rd);
-			AT24CXX_WriteOneByte(EE_BYTE_3rd, (temp + 1));
-			if(temp == 0xFF){
-				temp = AT24CXX_ReadOneByte(EE_BYTE_4th);
-				AT24CXX_WriteOneByte(EE_BYTE_4th, (temp + 1));
-				if(temp == 0xFF){	
-					temp = AT24CXX_ReadOneByte(EE_BYTE_5th);
-					AT24CXX_WriteOneByte(EE_BYTE_5th, (temp + 1));
-					if(temp == 0xFF){	
-						temp = AT24CXX_ReadOneByte(EE_BYTE_6th);
-						AT24CXX_WriteOneByte(EE_BYTE_6th, (temp + 1));
-					}
-
-				}
-			}
+			AT24CXX_WriteOneByte(EE_BYTE_3rd, (temp + 1) % 0xFF);
 		}
 			
 	}
 }
 
-//功能：初次上电判断函数
+//功能：初次上电判断函数  （init配置）
 void EEPROMFirstPowerCol(void)
 {
 	if(AT24CXX_ReadOneByte(EE_INIT) == INIT_YES)
@@ -180,32 +170,59 @@ void EEPROMFirstPowerCol(void)
 		AT24CXX_WriteOneByte(EE_BYTE_1st_LOCAL, BYTE_FIRST_CNT);
 		AT24CXX_WriteOneByte(EE_INIT, INIT_NO);	
 	}
-	else	//获取EEPROM中的计数值
-	{
-		addr_1st = AT24CXX_ReadOneByte(EE_BYTE_1st_LOCAL);
-		timer_value[EE_BYTE_6th] = AT24CXX_ReadOneByte(EE_BYTE_6th);
-		timer_value[EE_BYTE_5th] = AT24CXX_ReadOneByte(EE_BYTE_5th);
-		timer_value[EE_BYTE_4th] = AT24CXX_ReadOneByte(EE_BYTE_4th);
-		timer_value[EE_BYTE_3rd] = AT24CXX_ReadOneByte(EE_BYTE_3rd);
-		timer_value[EE_BYTE_2nd] = AT24CXX_ReadOneByte(EE_BYTE_2nd);
-		timer_value[EE_BYTE_1st_LOCAL] = AT24CXX_ReadOneByte(addr_1st);	
-		Threshold_value = timer_value[EE_BYTE_3rd] + timer_value[EE_BYTE_4th] >> 8 + timer_value[EE_BYTE_5th] >> 8*2 \
-						 + timer_value[EE_BYTE_6th] >> 8*3;
-	}
+//	else	//获取EEPROM中的计数值
+//	{
+//		u8 addr_1st = AT24CXX_ReadOneByte(EE_BYTE_1st_LOCAL);
+//		timer_value[EE_BYTE_3rd] = AT24CXX_ReadOneByte(EE_BYTE_3rd);
+//		timer_value[EE_BYTE_2nd] = AT24CXX_ReadOneByte(EE_BYTE_2nd);
+//		timer_value[EE_BYTE_1st_LOCAL] = AT24CXX_ReadOneByte(addr_1st);	
+//	}
 	
 }
+
+
 //功能：警告处理
 void EEPROMWarnningCol(void)
 {
-	if(Threshold_value > WARNNING_VALUE)
+	u32 threshold_value = (AT24CXX_ReadOneByte(EE_BYTE_3rd) << 16) | (AT24CXX_ReadOneByte(EE_BYTE_2nd) << 8) | \
+		AT24CXX_ReadOneByte(AT24CXX_ReadOneByte(EE_BYTE_1st_LOCAL));
+	if(threshold_value > WARNNING_MAX_VALUE)
 	{
 		//直接警告即可
 	}
 }
 
+//功能：EEPROM低8bit写入超过10200次移至下个存储区
+void EEPROMWriteOut1W(void)
+{
+	u16 cnt_16B_value = (AT24CXX_ReadOneByte(EE_BYTE_3rd) << 8) | (AT24CXX_ReadOneByte(EE_BYTE_2nd));
+	//读取低8bit存储位置值 减去 结束值 （5 - 4 = 1）表示使用1个低8bit存储位置
+	if(cnt_16B_value >= (AT24CXX_ReadOneByte(EE_BYTE_1st_LOCAL) - EE_END) * WRITE_OUT_1W)
+	{
+		//修改写入低8bit的地址 +1
+		AT24CXX_WriteOneByte(EE_BYTE_1st_LOCAL, (AT24CXX_ReadOneByte(EE_BYTE_1st_LOCAL) + 1));
+	}	
+}
 
 
+//功能：警告 + 写入超出处理 + 写入保存
+//参数：bool flag:存储EEPROM标志
+//返回值：bool 用于修改flag_save_eeprom的值
+bool WarningAndWriteOutAndSave(bool flag)
+{
 
+	if(flag)	//判断是否需要存储
+	{
+		EEPROMWarnningCol();	//警告提醒
+		
+		EEPROMWriteOut1W();		//低8bit写入超出
+
+		EEPROMReadSaveCol();	//写入保存
+
+	}
+
+	return FALSE;
+}
 
 
 

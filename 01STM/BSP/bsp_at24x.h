@@ -15,20 +15,19 @@
 //Mini STM32开发板使用的是24c02，所以定义EE_TYPE为AT24C02
 #define EE_TYPE AT24C256
 
+//========================定时器使用====================================
+#define WARNNING_MAX_VALUE		0x6DDD00		//警告值
+#define BYTE_FIRST_CNT			(EE_END + 1)
 
-#define WARNNING_VALUE		0x6DDC		//距离越界还有180h左右
-#define BYTE_FIRST_CNT		7
-
-//AT存储的地址
+//AT存储的地址  -->const定义
 enum
 {
-	EE_BYTE_6th = 0,		//第六个字节
-	EE_BYTE_5th,		//第五个字节
-	EE_BYTE_4th,		//第四个字节
-	EE_BYTE_3rd,		//第三个字节
+	EE_BYTE_3rd = 0,	//第三个字节
 	EE_BYTE_2nd,		//第二个字节
 	EE_BYTE_1st_LOCAL,	//存储第一个字节的地址/位置
-	EE_INIT				//EEPROM 是否初次上电
+	EE_INIT,			//EEPROM 是否初次上电
+
+	EE_END				//结束标志	
 };
 
 //是否初次上电值
@@ -37,7 +36,10 @@ typedef enum
 	INIT_YES = 0,
 	INIT_NO,
 } 
-eeprom_val;
+eeprom_init_val;
+
+bool WarningAndWriteOutAndSave(bool flag);
+
 
 //=============================AT24函数==================================
 u8 AT24CXX_ReadOneByte(u16 ReadAddr);							//指定地址读取一个字节

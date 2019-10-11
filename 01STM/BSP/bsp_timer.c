@@ -30,6 +30,9 @@ void TIM2_IRQHandler(void)   //TIM3中断
 
 #if  TIM3_CONFIG_ENABLED
 
+#define  VALUE_TIMEOUT		20		//10s中断标志
+extern bool flag_save_eeprom;		//保存EEPROM标志
+
 void TIM3_Int_Init(u16 arr, u16 psc)
 {
     TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
@@ -46,7 +49,7 @@ void TIM3_Int_Init(u16 arr, u16 psc)
 
 }
 
-#define  VALUE_TIMEOUT		20
+
 //功能：定时器3中断服务程序  500ms
 void TIM3_IRQHandler(void)   //TIM3中断
 {
@@ -64,8 +67,8 @@ void TIM3_IRQHandler(void)   //TIM3中断
 		//每 VALUE_TIMEOUT 秒 将EEPROM进行一次写入
 		if(++cntTimeOut > VALUE_TIMEOUT){
 			cntTimeOut = 0;
-			//写入EEPROM
-			
+			//EEPROM写入标志开启
+			flag_save_eeprom = TRUE;			
 		}
 		
         TIM_ClearITPendingBit(TIM3, TIM_IT_Update);    //清除TIMx的中断待处理位:TIM 中断源

@@ -1,4 +1,5 @@
 #include "bsp_common.h"
+extern bool flag_save_eeprom;
 
 int main(void)
 {
@@ -10,7 +11,7 @@ int main(void)
 
 	while(1)
 	{		
-		
+		flag_save_eeprom = WarningAndWriteOutAndSave(flag_save_eeprom);
 	}
 }
 

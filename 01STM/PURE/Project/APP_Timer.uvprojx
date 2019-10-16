@@ -477,16 +477,6 @@
               <FilePath>..\User\stm32f10x_it.c</FilePath>
             </File>
             <File>
-              <FileName>bsp_i2c.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\BSP\bsp_i2c.c</FilePath>
-            </File>
-            <File>
-              <FileName>bsp_i2c.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\BSP\bsp_i2c.h</FilePath>
-            </File>
-            <File>
               <FileName>bsp_at24x.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\BSP\bsp_at24x.c</FilePath>
@@ -495,6 +485,21 @@
               <FileName>bsp_at24x.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\BSP\bsp_at24x.h</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_oled.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\BSP\bsp_oled.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_oled.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\BSP\bsp_oled.h</FilePath>
+            </File>
+            <File>
+              <FileName>oledfont.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\BSP\oledfont.h</FilePath>
             </File>
           </Files>
         </Group>

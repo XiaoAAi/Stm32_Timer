@@ -61,7 +61,7 @@ void TIM3_IRQHandler(void)   //TIM3中断
 		if(++cntDebugLed > 5)
 		{
 			cntDebugLed = 0;
-			LED_SWITCH();			
+			LED_SWITCH();				
 		}
 
 		//每 VALUE_TIMEOUT 秒 将EEPROM进行一次写入

@@ -1,46 +1,20 @@
 #include "bsp_i2c.h"
 #include "bsp_delay.h"
 
-//设置引脚的时候，SCL时钟线为推挽输出  SDA数据线为开漏输出
- 
-//初始化IIC
-void IIC_Init(void)
-{					     
-	GPIO_InitTypeDef GPIO_InitStructure;
-	RCC_APB2PeriphClockCmd(	RCC_APB2Periph_GPIOB, ENABLE );	//使能GPIOB时钟
-	   
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP ;   //推挽输出
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_Init(GPIOB, &GPIO_InitStructure);
-	GPIO_SetBits(GPIOB,GPIO_Pin_6 | GPIO_Pin_7); 	//PB6,PB7 输出高
-	
-	
-//	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
-//	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_OD ;   //推挽输出
-//	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-//	GPIO_Init(GPIOB, &GPIO_InitStructure);
-//	GPIO_SetBits(GPIOB,GPIO_Pin_7); 	//PB6,PB7 输出高
-}
 
-void PB7int(void)
-{					     
-	GPIO_InitTypeDef GPIO_InitStructure;
-	RCC_APB2PeriphClockCmd(	RCC_APB2Periph_GPIOB, ENABLE );	//使能GPIOB时钟
-	   
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU ;   //推挽输出
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_Init(GPIOB, &GPIO_InitStructure);
-	GPIO_SetBits(GPIOB,GPIO_Pin_7); 	//PB6,PB7 输出高
-	
-	
-//	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
-//	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_OD ;   //推挽输出
-//	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-//	GPIO_Init(GPIOB, &GPIO_InitStructure);
-//	GPIO_SetBits(GPIOB,GPIO_Pin_7); 	//PB6,PB7 输出高
-}
+
+	//设置引脚的时候，SCL时钟线为推挽输出   	     SDA数据线为开漏输出
+	//初始化IIC
+//void IIC_Init(void)
+//{					     
+//	switch_eeprom_oled = EEPROM_PIN;
+//}
+
+	//功能：切换EEPROM / OLED
+//void IIC_Switch_EEPROM_OLED(bool flag)
+//{
+//	switch_eeprom_oled = flag;
+//}
 
 
 

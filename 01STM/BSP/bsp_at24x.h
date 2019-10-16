@@ -1,6 +1,6 @@
-﻿#ifndef __24CXX_H
+#ifndef __24CXX_H
 #define __24CXX_H
-#include "bsp_i2c.h"   
+#include "bsp_common.h"   
 
 //宏定义
 #define AT24C01		127
@@ -13,7 +13,7 @@
 #define AT24C128	16383
 #define AT24C256	32767  
 //Mini STM32开发板使用的是24c02，所以定义EE_TYPE为AT24C02
-#define EE_TYPE AT24C256
+#define EE_TYPE AT24C16
 
 //========================定时器使用====================================
 #define WARNNING_MAX_VALUE		0x6DDD00		//警告值
@@ -38,7 +38,28 @@ typedef enum
 } 
 eeprom_init_val;
 
-bool WarningAndWriteOutAndSave(bool flag);
+//bool WarningAndWriteOutAndSave(bool flag);
+void WarningAndWriteOutAndSave(u8* flag);
+void EEPROMFirstPowerCol(void);
+//------------IIC引脚配置---------------------
+//IO方向设置	
+#define SDA_IN()  {GPIOB->CRL&=0X0FFFFFFF;GPIOB->CRL|=(u32)8<<28;}
+#define SDA_OUT() {GPIOB->CRL&=0X0FFFFFFF;GPIOB->CRL|=(u32)3<<28;}
+
+//IO操作函数	 		EEPROM_PIN     
+#define IIC_SCL    PBout(6)	//SCL
+#define IIC_SDA    PBout(7) //SDA	 
+#define READ_SDA   PBin(7)  //输入SDA 
+
+////IO方向设置	
+//#define SDA_IN()  {GPIOB->CRH&=0X0FFFFFFF;GPIOB->CRH|=(u32)8<<12;}
+//#define SDA_OUT() {GPIOB->CRH&=0X0FFFFFFF;GPIOB->CRH|=(u32)3<<12;}
+
+////IO操作函数	 		EEPROM_PIN     
+//#define IIC_SCL    PBout(10)	//SCL
+//#define IIC_SDA    PBout(11) //SDA	 
+//#define READ_SDA   PBin(11)  //输入SDA 
+
 
 
 //=============================AT24函数==================================

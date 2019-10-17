@@ -32,7 +32,31 @@
 #define Max_Row		64
 #define	Brightness	0xFF 
 #define X_WIDTH 	128
-#define Y_WIDTH 	64	    						  
+#define Y_WIDTH 	64	    
+
+//功能：显示实联医疗定时器
+#define  DISPLAY_SHI_LIAN_TIMER			\
+	{									\
+		OLED_Clear();					\
+		OLED_ShowCHinese(0,0,0);		\
+		OLED_ShowCHinese(18,0,1);		\
+		OLED_ShowCHinese(36,0,2);		\
+		OLED_ShowCHinese(54,0,3);		\
+		OLED_ShowCHinese(72,0,4);		\
+		OLED_ShowCHinese(90,0,5);		\
+		OLED_ShowCHinese(108,0,6);		\
+		OLED_ShowChar(120, 4, 'H', 0);	\
+	}
+
+//		//固定位置  万 千 百 十 个 H
+//		OLED_ShowCHinese_32X32(10, 3, 0);
+//		OLED_ShowCHinese_32X32(30, 3, 1);
+//		OLED_ShowCHinese_32X32(50, 3, 2);
+//		OLED_ShowCHinese_32X32(70, 3, 3);
+//		OLED_ShowCHinese_32X32(90, 3, 8);
+//		OLED_ShowChar(120, 4, 'H', 0);
+	
+
 //-----------------OLED IIC端口定义----------------  					   
 
 #define OLED_SCLK_Clr() GPIO_ResetBits(GPIOB,GPIO_Pin_10)//SCL
@@ -69,6 +93,10 @@ void fill_picture(unsigned char fill_Data);
 void Write_IIC_Command(unsigned char IIC_Command);
 void Write_IIC_Data(unsigned char IIC_Data);
 void Write_IIC_Byte(unsigned char IIC_Byte);
+
+
+//显示汉字  32X32
+void OLED_ShowCHinese_32X32(u8 x,u8 y,u8 no);
 
 //void IIC2_Wait_Ack();
 #endif  

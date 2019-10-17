@@ -33,6 +33,10 @@ void TIM2_IRQHandler(void)   //TIM3中断
 #define  VALUE_TIMEOUT		20		//10s中断标志
 extern bool flag_save_eeprom;		//保存EEPROM标志
 
+//#define  VALUE_CHECKOUT		120		//1min中断标志
+#define  VALUE_CHECKOUT		40		//1min中断标志
+bool flag_checkout  = FALSE;		//检查标志标志
+
 void TIM3_Int_Init(u16 arr, u16 psc)
 {
     TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
@@ -55,6 +59,7 @@ void TIM3_IRQHandler(void)   //TIM3中断
 {
 	static u8 cntDebugLed = 0;		//调试灯计数
 	static u8 cntTimeOut = 0;		//超时计
+	static u8 cntCheckout = 0;		//检测计时
     if(TIM_GetITStatus(TIM3, TIM_IT_Update) != RESET)  //检查指定的TIM中断发生与否:TIM 中断源
     {
 		//调试灯
@@ -64,11 +69,18 @@ void TIM3_IRQHandler(void)   //TIM3中断
 			LED_SWITCH();				
 		}
 
-		//每 VALUE_TIMEOUT 秒 将EEPROM进行一次写入
+		//每 VALUE_TIMEOUT * 0.5 秒 将EEPROM进行一次写入
 		if(++cntTimeOut > VALUE_TIMEOUT){
 			cntTimeOut = 0;
 			//EEPROM写入标志开启
 			flag_save_eeprom = TRUE;			
+		}
+		
+		// 每 VALUE_CHECKOUT * 0.5 s检测一次
+		if(++cntCheckout > VALUE_CHECKOUT)
+		{
+			cntCheckout = 0;
+			flag_checkout = TRUE;
 		}
 		
         TIM_ClearITPendingBit(TIM3, TIM_IT_Update);    //清除TIMx的中断待处理位:TIM 中断源

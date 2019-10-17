@@ -40,7 +40,11 @@ eeprom_init_val;
 
 //bool WarningAndWriteOutAndSave(bool flag);
 void WarningAndWriteOutAndSave(u8* flag);
-void EEPROMFirstPowerCol(void);
+//void EEPROMFirstPowerCol(void);
+void EEPROM_check(void);
+void EEPROM_clear(void);
+void EEPROM_init(void);
+
 //------------IIC引脚配置---------------------
 //IO方向设置	
 #define SDA_IN()  {GPIOB->CRL&=0X0FFFFFFF;GPIOB->CRL|=(u32)8<<28;}

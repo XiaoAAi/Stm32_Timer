@@ -112,7 +112,8 @@ void Write_IIC_Byte(unsigned char IIC_Byte)
 void Write_IIC_Command(unsigned char IIC_Command)
 {
    IIC2_Start();
-   Write_IIC_Byte(0x78);            //Slave address,SA0=0
+//   Write_IIC_Byte(0x78);            //Slave address,SA0=0
+	 Write_IIC_Byte(0x7A);
 	IIC2_Wait_Ack();	
    Write_IIC_Byte(0x00);			//write command
 	IIC2_Wait_Ack();	
@@ -126,7 +127,8 @@ void Write_IIC_Command(unsigned char IIC_Command)
 void Write_IIC_Data(unsigned char IIC_Data)
 {
    IIC2_Start();
-   Write_IIC_Byte(0x78);			//D/C#=0; R/W#=0
+//   Write_IIC_Byte(0x78);			//D/C#=0; R/W#=0
+	Write_IIC_Byte(0x7A);
 	IIC2_Wait_Ack();	
    Write_IIC_Byte(0x40);			//write data
 	IIC2_Wait_Ack();	
@@ -137,13 +139,13 @@ void Write_IIC_Data(unsigned char IIC_Data)
 void OLED_WR_Byte(unsigned dat,unsigned cmd)
 {
 	if(cmd)
-			{
+	{
 
-   Write_IIC_Data(dat);
+		Write_IIC_Data(dat);
    
-		}
+	}
 	else {
-   Write_IIC_Command(dat);
+		Write_IIC_Command(dat);
 		
 	}
 
@@ -318,6 +320,39 @@ void OLED_ShowCHinese(u8 x,u8 y,u8 no)
 				adder+=1;
       }					
 }
+
+
+//显示汉字  32X32
+void OLED_ShowCHinese_32X32(u8 x,u8 y,u8 no)
+{      			    
+	u8 t,adder=0;
+	OLED_Set_Pos(x,y);	
+    for(t=0;t<16;t++)
+	{
+		OLED_WR_Byte(F32X32[2*no][t],OLED_DATA);
+		adder+=1;
+    }	
+	OLED_Set_Pos(x,y+1);	
+    for(t=16;t<32;t++)
+	{	
+		OLED_WR_Byte(F32X32[2*no][t],OLED_DATA);
+		adder+=1;
+    }
+	OLED_Set_Pos(x,y+2);	
+    for(t=0;t<16;t++)
+	{
+		OLED_WR_Byte(F32X32[2*no+1][t],OLED_DATA);
+		adder+=1;
+    }	
+	OLED_Set_Pos(x,y+3);	
+    for(t=16;t<32;t++)
+	{	
+		OLED_WR_Byte(F32X32[2*no+1][t],OLED_DATA);
+		adder+=1;
+    }					
+}
+
+
 /***********功能描述：显示显示BMP图片128×64起始点坐标(x,y),x的范围0～127，y为页的范围0～7*****************/
 void OLED_DrawBMP(unsigned char x0, unsigned char y0,unsigned char x1, unsigned char y1,unsigned char BMP[])
 { 	
@@ -387,6 +422,7 @@ OLED_WR_Byte(0xAE,OLED_CMD);//--display off
 	
 	OLED_WR_Byte(0xAF,OLED_CMD);//--turn on oled panel
 }  
+
 
 
 

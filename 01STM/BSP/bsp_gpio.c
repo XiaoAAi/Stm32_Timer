@@ -8,7 +8,7 @@ void GPIO_Configure(void)
     GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE); //关闭JTAG因为要使用PB3和4
 	//key1
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
 	//DEBUG调试灯
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15;
@@ -37,9 +37,9 @@ void GPIO_Configure(void)
 //功能：串口初始化程序
 void USART_Configure(void)
 {
-    //GPIO端口设置
-    GPIO_InitTypeDef GPIO_InitStructure;
-    USART_InitTypeDef USART_InitStructure;
+//    //GPIO端口设置
+//    GPIO_InitTypeDef GPIO_InitStructure;
+//    USART_InitTypeDef USART_InitStructure;
 #if USART1_CONFIG_ENABLED > 0       /* 串口配置使能判断，串口1 TX = PA9   RX = PA10 */
     /* 第1步：打开GPIO和USART部件的时钟 */
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_AFIO, ENABLE);

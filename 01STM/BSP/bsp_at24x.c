@@ -258,30 +258,12 @@ void AT24CXX_Write(u16 WriteAddr,u8 *pBuffer,u16 NumToWrite)
  
 //============================执行程序========================
 //u8 addr_1st = BYTE_FIRST_CNT;			//存储第一个字节的地址/位置
-u8 timer_value[6] = {0};	//存储计数器的值  高位在前低位在后
-u32 threshold_value = 0;	//警告阈值判断	高32bit判断
+//u8 timer_value[6] = {0};	//存储计数器的值  高位在前低位在后
+volatile u32 threshold_value = 0;	//警告阈值判断	高32bit判断
 bool flag_save_eeprom = FALSE;	//存储EEPROM标志
 #define WRITE_OUT_1W	40	//40*255 = 10200次
 
-//功能：EEPROM存储
-void EEPROMReadSaveCol(void)
-{
-	u8 addr_1st = AT24CXX_ReadOneByte(EE_BYTE_1st_LOCAL);
-	u8 temp = AT24CXX_ReadOneByte(addr_1st);
-	AT24CXX_WriteOneByte(addr_1st, (temp + 1) % 0xFF);
-	if(temp == 0xFF){	
-		temp = AT24CXX_ReadOneByte(EE_BYTE_2nd);
-		AT24CXX_WriteOneByte(EE_BYTE_2nd, (temp + 1) % 0xFF);
-		if(temp == 0xFF){
-	
-			temp = AT24CXX_ReadOneByte(EE_BYTE_3rd);
-			AT24CXX_WriteOneByte(EE_BYTE_3rd, (temp + 1) % 0xFF);
-		}
-			
-	}
-}
-
-//功能：初次上电判断函数  （init配置）
+//功能：初次上电判断函数  （init配置）  -->暂不需要
 void EEPROMFirstPowerCol(void)
 {
 	if(AT24CXX_ReadOneByte(EE_INIT) == INIT_YES)
@@ -304,14 +286,21 @@ void EEPROMFirstPowerCol(void)
 }
 
 
-//功能：警告处理
-void EEPROMWarnningCol(void)
+//功能：EEPROM存储
+void EEPROMReadSaveCol(void)
 {
-	u32 threshold_value = (AT24CXX_ReadOneByte(EE_BYTE_3rd) << 16) | (AT24CXX_ReadOneByte(EE_BYTE_2nd) << 8) | \
-		AT24CXX_ReadOneByte(AT24CXX_ReadOneByte(EE_BYTE_1st_LOCAL));
-	if(threshold_value > WARNNING_MAX_VALUE)
-	{
-		//直接警告即可
+	u8 addr_1st = AT24CXX_ReadOneByte(EE_BYTE_1st_LOCAL);
+	u8 temp = AT24CXX_ReadOneByte(addr_1st);
+	AT24CXX_WriteOneByte(addr_1st, 0xFF);
+	if(temp == 0xFF){	
+		temp = AT24CXX_ReadOneByte(EE_BYTE_2nd);
+		AT24CXX_WriteOneByte(EE_BYTE_2nd, (temp + 1));
+		if(temp == 0xFF){
+	
+			temp = AT24CXX_ReadOneByte(EE_BYTE_3rd);
+			AT24CXX_WriteOneByte(EE_BYTE_3rd, (temp + 1));
+		}
+			
 	}
 }
 
@@ -322,6 +311,7 @@ void EEPROMWriteOut1W(void)
 	//读取低8bit存储位置值 减去 结束值 （5 - 4 = 1）表示使用1个低8bit存储位置
 	if(cnt_16B_value >= (AT24CXX_ReadOneByte(EE_BYTE_1st_LOCAL) - EE_END) * WRITE_OUT_1W)
 	{
+		u8 temp = AT24CXX_ReadOneByte(EE_BYTE_1st_LOCAL);
 		//修改写入低8bit的地址 +1
 		AT24CXX_WriteOneByte(EE_BYTE_1st_LOCAL, (AT24CXX_ReadOneByte(EE_BYTE_1st_LOCAL) + 1));
 	}	
@@ -336,7 +326,7 @@ void WarningAndWriteOutAndSave(u8* flag)
 
 	if(*flag)	//判断是否需要存储
 	{
-		EEPROMWarnningCol();	//警告提醒
+//		EEPROMWarnningCol();	//警告提醒    -->太过频繁
 		
 		EEPROMWriteOut1W();		//低8bit写入超出
 
@@ -349,7 +339,90 @@ void WarningAndWriteOutAndSave(u8* flag)
 //	return FALSE;
 }
 
+//功能：返回以10s 为单位的值
+u32 ReturnEEprom10sValue(void)
+{
+	//读取 10s为单位的值
+	threshold_value = (AT24CXX_ReadOneByte(EE_BYTE_3rd) << 16) | (AT24CXX_ReadOneByte(EE_BYTE_2nd) << 8) \
+		| AT24CXX_ReadOneByte(AT24CXX_ReadOneByte(EE_BYTE_1st_LOCAL));
+	
+	return threshold_value;
+}
 
 
+//功能：警告处理
+void EEPROMWarnningCol(void)
+{
+	if(ReturnEEprom10sValue() > WARNNING_MAX_VALUE)
+	{
+		//直接警告即可
+		BEEP_ON
+	}
+}
+
+//功能：读取EEPROM数据
+//参数：无
+//返回值： > 0 表示有效的小时数   = 0表示无效值 没有累计一小时
+u16 ReadEEpromHowHour(void)
+{
+	static u16 cnt_fact_hour_value = 0;			//对比
+	//获取到小时数
+	u16 cnt_hour_value = (ReturnEEprom10sValue() / 360) & 0xFFFF;
+	
+	if(cnt_hour_value != cnt_fact_hour_value)
+	{
+		cnt_fact_hour_value = cnt_hour_value;
+	}
+	else
+	{
+		cnt_hour_value = 0;
+	}
+
+	return cnt_hour_value;
+}
+
+
+//功能:处理小时数显示OLED
+void ByHourDisplay(u16 hour_val)
+{
+	int cnt = 0;
+
+	while(hour_val)
+	{
+		OLED_ShowCHinese_32X32((90 - (cnt * 20)), 3, (hour_val % 10));
+		hour_val /= 10;
+		cnt++;
+	}
+}
+
+
+
+//EEPROM  检测
+void EEPROM_check(void)
+{
+	EEPROMWarnningCol();		//EEPROM报警
+	ByHourDisplay(ReadEEpromHowHour());		//显示时长
+}
+
+//EEPROM init 
+void EEPROM_init(void)
+{
+	OLED_ShowCHinese_32X32(90, 3, 0);
+	EEPROM_check();
+}
+
+//EEPROM clear
+void EEPROM_clear(void)
+{
+	for(int i=0; i<EE_TYPE; i++)
+	{
+		AT24CXX_WriteOneByte(i, 0x00);
+	}
+	//设置存储第一字节的地址
+	AT24CXX_WriteOneByte(EE_BYTE_1st_LOCAL, BYTE_FIRST_CNT);
+//	AT24CXX_WriteOneByte(EE_INIT, INIT_NO);			//初始化，--->不需要
+
+	EEPROM_init();		//初始化
+}
 
 

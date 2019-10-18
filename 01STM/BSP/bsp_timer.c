@@ -33,7 +33,7 @@ void TIM2_IRQHandler(void)   //TIM3中断
 #define  VALUE_TIMEOUT		10		//10s中断标志
 extern bool flag_save_eeprom;		//保存EEPROM标志
 
-#define  VALUE_CHECKOUT		31		//30s中断标志
+#define  VALUE_CHECKOUT		30		//30s中断标志
 //#define  VALUE_CHECKOUT		40		//20s中断标志
 bool flag_checkout  = FALSE;		//检查标志标志
 

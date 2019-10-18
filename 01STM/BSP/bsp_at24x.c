@@ -291,7 +291,8 @@ void EEPROMReadSaveCol(void)
 {
 	u8 addr_1st = AT24CXX_ReadOneByte(EE_BYTE_1st_LOCAL);
 	u8 temp = AT24CXX_ReadOneByte(addr_1st);
-	AT24CXX_WriteOneByte(addr_1st, 0xFF);
+	AT24CXX_WriteOneByte(addr_1st, (temp + 1));
+//	AT24CXX_WriteOneByte(addr_1st, 0xFF);
 	if(temp == 0xFF){	
 		temp = AT24CXX_ReadOneByte(EE_BYTE_2nd);
 		AT24CXX_WriteOneByte(EE_BYTE_2nd, (temp + 1));
@@ -421,7 +422,9 @@ void EEPROM_clear(void)
 	//设置存储第一字节的地址
 	AT24CXX_WriteOneByte(EE_BYTE_1st_LOCAL, BYTE_FIRST_CNT);
 //	AT24CXX_WriteOneByte(EE_INIT, INIT_NO);			//初始化，--->不需要
-
+	
+	OLED_Clear();
+	DISPLAY_SHI_LIAN_TIMER
 	EEPROM_init();		//初始化
 }
 

@@ -12,8 +12,8 @@ int main(void)
     GPIO_Configure();
     USART_Configure();
     NVIC_Configure();
-//	TIM3_Int_Init(4999, 7199);	//500ms
-	TIM3_Int_Init(499, 7199);	//50ms
+	TIM3_Int_Init(9999, 7199);	//500ms
+//	TIM3_Int_Init(499, 7199);	//50ms
 	//开机提示音
 //	OPEN_TIP
 	
@@ -22,8 +22,8 @@ int main(void)
 	//初始化OLED
 	OLED_Init();
 	OLED_Clear();
-	
 	DISPLAY_SHI_LIAN_TIMER
+	
 	EEPROM_init();
 
 	while(1)

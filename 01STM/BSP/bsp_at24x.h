@@ -17,6 +17,7 @@
 
 //========================定时器使用====================================
 #define WARNNING_MAX_VALUE		0x6DDD00		//警告值
+//#define WARNNING_MAX_VALUE		0x1339E0		//警告值    3000H
 #define BYTE_FIRST_CNT			(EE_END + 1)
 
 //AT存储的地址  -->const定义

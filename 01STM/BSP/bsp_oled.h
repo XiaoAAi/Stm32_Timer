@@ -35,6 +35,19 @@
 #define Y_WIDTH 	64	    
 
 //功能：显示实联医疗定时器
+//#define  DISPLAY_SHI_LIAN_TIMER			\
+//	{									\
+//		OLED_Clear();					\
+//		OLED_ShowCHinese(0,0,0);		\
+//		OLED_ShowCHinese(18,0,1);		\
+//		OLED_ShowCHinese(36,0,2);		\
+//		OLED_ShowCHinese(54,0,3);		\
+//		OLED_ShowCHinese(72,0,4);		\
+//		OLED_ShowCHinese(90,0,5);		\
+//		OLED_ShowCHinese(108,0,6);		\
+//		OLED_ShowChar(120, 4, 'H', 0);	\
+//	}
+
 #define  DISPLAY_SHI_LIAN_TIMER			\
 	{									\
 		OLED_Clear();					\
@@ -45,7 +58,8 @@
 		OLED_ShowCHinese(72,0,4);		\
 		OLED_ShowCHinese(90,0,5);		\
 		OLED_ShowCHinese(108,0,6);		\
-		OLED_ShowChar(120, 4, 'H', 0);	\
+		OLED_ShowCHinese_8X16(120, 3, 0);	\
+		OLED_ShowCHinese_8X16(120, 5, 1);	\
 	}
 
 //		//固定位置  万 千 百 十 个 H
@@ -97,6 +111,9 @@ void Write_IIC_Byte(unsigned char IIC_Byte);
 
 //显示汉字  32X32
 void OLED_ShowCHinese_32X32(u8 x,u8 y,u8 no);
+//显示汉字8X16
+void OLED_ShowCHinese_8X16(u8 x,u8 y,u8 no);
+
 
 //void IIC2_Wait_Ack();
 #endif  

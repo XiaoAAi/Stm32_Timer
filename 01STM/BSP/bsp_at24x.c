@@ -263,18 +263,18 @@ volatile u32 threshold_value = 0;	//警告阈值判断	高32bit判断
 bool flag_save_eeprom = FALSE;	//存储EEPROM标志
 #define WRITE_OUT_1W	40	//40*255 = 10200次
 
-//功能：初次上电判断函数  （init配置）  -->暂不需要
-void EEPROMFirstPowerCol(void)
-{
-	if(AT24CXX_ReadOneByte(EE_INIT) == INIT_YES)
-	{
-		//清除所有字节的值
-		//....
+////功能：初次上电判断函数  （init配置）  -->暂不需要
+//void EEPROMFirstPowerCol(void)
+//{
+//	if(AT24CXX_ReadOneByte(EE_INIT) == INIT_YES)
+//	{
+//		//清除所有字节的值
+//		//....
 
-		//设置存储第一字节的地址
-		AT24CXX_WriteOneByte(EE_BYTE_1st_LOCAL, BYTE_FIRST_CNT);
-		AT24CXX_WriteOneByte(EE_INIT, INIT_NO);	
-	}
+//		//设置存储第一字节的地址
+//		AT24CXX_WriteOneByte(EE_BYTE_1st_LOCAL, BYTE_FIRST_CNT);
+//		AT24CXX_WriteOneByte(EE_INIT, INIT_NO);	
+//	}
 //	else	//获取EEPROM中的计数值
 //	{
 //		u8 addr_1st = AT24CXX_ReadOneByte(EE_BYTE_1st_LOCAL);
@@ -283,23 +283,49 @@ void EEPROMFirstPowerCol(void)
 //		timer_value[EE_BYTE_1st_LOCAL] = AT24CXX_ReadOneByte(addr_1st);	
 //	}
 	
+//}
+
+//功能：第一个字节的地址
+u16 Return1stAddr(void)
+{
+	return (u16)(AT24CXX_ReadOneByte(EE_BYTE_1st_HIGH) << 8 | AT24CXX_ReadOneByte(EE_BYTE_1st_LOW));
+}
+
+//功能：第一位字节的返回
+u8 Return1stValue(void)
+{
+//	u16 temp = AT24CXX_ReadOneByte(EE_BYTE_1st_HIGH) << 8 | AT24CXX_ReadOneByte(EE_BYTE_1st_LOW);
+
+	return AT24CXX_ReadOneByte(Return1stAddr());
+}
+
+//功能：写第一字节的值
+void Write1stValue(u8 date)
+{
+	AT24CXX_WriteOneByte(Return1stAddr(), date);
 }
 
 
 //功能：EEPROM存储
 void EEPROMReadSaveCol(void)
 {
-	u8 addr_1st = AT24CXX_ReadOneByte(EE_BYTE_1st_LOCAL);
-	u8 temp = AT24CXX_ReadOneByte(addr_1st);
-	AT24CXX_WriteOneByte(addr_1st, (temp + 1));
+//	u8 addr_1st = AT24CXX_ReadOneByte(EE_BYTE_1st_LOCAL);
+//	u8 temp = AT24CXX_ReadOneByte(addr_1st);
+	
+	u8 temp = Return1stValue();
+	Write1stValue(((temp+1)&0xFF));
+//	Write1stValue((0xFF));
+	
+	
+//	AT24CXX_WriteOneByte(addr_1st, (temp + 1));
 //	AT24CXX_WriteOneByte(addr_1st, 0xFF);
 	if(temp == 0xFF){	
 		temp = AT24CXX_ReadOneByte(EE_BYTE_2nd);
-		AT24CXX_WriteOneByte(EE_BYTE_2nd, (temp + 1));
+		AT24CXX_WriteOneByte(EE_BYTE_2nd, ((temp+1)&0xFF));
 		if(temp == 0xFF){
 	
 			temp = AT24CXX_ReadOneByte(EE_BYTE_3rd);
-			AT24CXX_WriteOneByte(EE_BYTE_3rd, (temp + 1));
+			AT24CXX_WriteOneByte(EE_BYTE_3rd, ((temp+1)&0xFF));
 		}
 			
 	}
@@ -310,11 +336,19 @@ void EEPROMWriteOut1W(void)
 {
 	u16 cnt_16B_value = (AT24CXX_ReadOneByte(EE_BYTE_3rd) << 8) | (AT24CXX_ReadOneByte(EE_BYTE_2nd));
 	//读取低8bit存储位置值 减去 结束值 （5 - 4 = 1）表示使用1个低8bit存储位置
-	if(cnt_16B_value >= (AT24CXX_ReadOneByte(EE_BYTE_1st_LOCAL) - EE_END) * WRITE_OUT_1W)
+	u16 temp1 = Return1stAddr();
+	u16 temp = (Return1stAddr() - EE_END) * WRITE_OUT_1W;
+	if(cnt_16B_value >= (Return1stAddr() - EE_END) * WRITE_OUT_1W)
 	{
-		u8 temp = AT24CXX_ReadOneByte(EE_BYTE_1st_LOCAL);
-		//修改写入低8bit的地址 +1
-		AT24CXX_WriteOneByte(EE_BYTE_1st_LOCAL, (AT24CXX_ReadOneByte(EE_BYTE_1st_LOCAL) + 1));
+//		u8 temp = AT24CXX_ReadOneByte(EE_BYTE_1st_LOCAL);
+//		//修改写入低8bit的地址 +1
+//		AT24CXX_WriteOneByte(EE_BYTE_1st_LOCAL, (AT24CXX_ReadOneByte(EE_BYTE_1st_LOCAL) + 1));
+		
+		u16 temp = Return1stAddr() + 1;
+		//修改地址高8bit    	低8bit
+		AT24CXX_WriteOneByte(EE_BYTE_1st_HIGH, (u8)(temp>>8&0xFF));
+		AT24CXX_WriteOneByte(EE_BYTE_1st_LOW, (u8)(temp&0xFF));
+
 	}	
 }
 
@@ -345,7 +379,7 @@ u32 ReturnEEprom10sValue(void)
 {
 	//读取 10s为单位的值
 	threshold_value = (AT24CXX_ReadOneByte(EE_BYTE_3rd) << 16) | (AT24CXX_ReadOneByte(EE_BYTE_2nd) << 8) \
-		| AT24CXX_ReadOneByte(AT24CXX_ReadOneByte(EE_BYTE_1st_LOCAL));
+		| Return1stValue();
 	
 	return threshold_value;
 }
@@ -420,7 +454,8 @@ void EEPROM_clear(void)
 		AT24CXX_WriteOneByte(i, 0x00);
 	}
 	//设置存储第一字节的地址
-	AT24CXX_WriteOneByte(EE_BYTE_1st_LOCAL, BYTE_FIRST_CNT);
+	AT24CXX_WriteOneByte(EE_BYTE_1st_HIGH, 0x00);
+	AT24CXX_WriteOneByte(EE_BYTE_1st_LOW, BYTE_FIRST_CNT);
 //	AT24CXX_WriteOneByte(EE_INIT, INIT_NO);			//初始化，--->不需要
 	
 	OLED_Clear();

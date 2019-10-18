@@ -25,8 +25,8 @@ enum
 {
 	EE_BYTE_3rd = 0,	//第三个字节
 	EE_BYTE_2nd,		//第二个字节
-	EE_BYTE_1st_LOCAL,	//存储第一个字节的地址/位置
-	EE_INIT,			//EEPROM 是否初次上电
+	EE_BYTE_1st_HIGH,	//存储第一个字节的地址/位置 的高8bit
+	EE_BYTE_1st_LOW,	//存储第一个字节的地址/位置 的低8bit
 
 	EE_END				//结束标志	
 };

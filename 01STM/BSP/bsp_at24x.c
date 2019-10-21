@@ -316,7 +316,6 @@ void EEPROMReadSaveCol(void)
 	Write1stValue(((temp+1)&0xFF));
 //	Write1stValue((0xFF));
 	
-	
 //	AT24CXX_WriteOneByte(addr_1st, (temp + 1));
 //	AT24CXX_WriteOneByte(addr_1st, 0xFF);
 	if(temp == 0xFF){	

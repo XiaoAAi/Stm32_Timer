@@ -22,17 +22,25 @@ if(GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_13) != 1)	\
 	delay_ms(500);									\
 	if(GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_13) != 1)\
 	{									\
+		BEEP_OFF						\
+		delay_ms(200);					\
+		BEEP_ON							\
+		delay_ms(100);					\
+		BEEP_OFF						
+						
+		
+		
+
+#define 	KEY_READ_END				\
+		BEEP_OFF						\
+		delay_ms(200);					\
 		BEEP_ON							\
 		delay_ms(100);					\
 		BEEP_OFF						\
 		delay_ms(200);					\
 		BEEP_ON							\
 		delay_ms(100);					\
-		BEEP_OFF						
-		
-		
-
-#define 	KEY_READ_END				\
+		BEEP_OFF						\
 	}									\
 }
 

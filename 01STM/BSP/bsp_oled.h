@@ -48,27 +48,62 @@
 //		OLED_ShowChar(120, 4, 'H', 0);	\
 //	}
 
-#define  DISPLAY_SHI_LIAN_TIMER			\
+//中文显示
+#define  DISPLAY_SHI_LIAN_TIMER_CH		\
 	{									\
 		OLED_Clear();					\
 		OLED_ShowCHinese(0,0,0);		\
 		OLED_ShowCHinese(18,0,1);		\
 		OLED_ShowCHinese(36,0,2);		\
 		OLED_ShowCHinese(54,0,3);		\
-		OLED_ShowCHinese(72,0,4);		\
-		OLED_ShowCHinese(90,0,5);		\
-		OLED_ShowCHinese(108,0,6);		\
-		OLED_ShowCHinese_8X16(120, 3, 0);	\
+		OLED_ShowChar(70, 0, ':', 16);	\
+		OLED_ShowCHinese_8X16(110, 5, 0);	\
 		OLED_ShowCHinese_8X16(120, 5, 1);	\
 	}
 
+//英文显示
+#define  DISPLAY_SHI_LIAN_TIMER_EN		\
+	{									\
+		OLED_Clear();					\
+		OLED_ShowCHinese(0,0,4);		\
+		OLED_ShowCHinese(14,0,5);		\
+		OLED_ShowCHinese(30,0,6);		\
+		OLED_ShowCHinese(46,0,7);		\
+		OLED_ShowCHinese(62,0,8);		\
+		OLED_ShowChar(78, 0, ':', 16);	\
+		OLED_ShowChar(104, 6,'h', 0);	\
+		OLED_ShowChar(110, 6,'o', 0);	\
+		OLED_ShowChar(116, 6,'r', 0);	\
+		OLED_ShowChar(122, 6,'e', 0);	\
+	}
+
+//切换中英文
+#define  DISPLAY_SHI_LIAN_TIMER			\
+	{									\
+		if(PBin(0) == 0)				\
+		{DISPLAY_SHI_LIAN_TIMER_EN}		\
+		else							\
+		{DISPLAY_SHI_LIAN_TIMER_CH}		\
+	}
+	
+	
+//		OLED_ShowCHinese(72,0,4);		\
+//		OLED_ShowCHinese(90,0,5);		\
+//		OLED_ShowCHinese(108,0,6);		\
+//		OLED_ShowCHinese_8X16(120, 3, 0);	\
+//		OLED_ShowCHinese_8X16(120, 5, 1);	\
+
+
 //		//固定位置  万 千 百 十 个 H
-//		OLED_ShowCHinese_32X32(10, 3, 0);
-//		OLED_ShowCHinese_32X32(30, 3, 1);
-//		OLED_ShowCHinese_32X32(50, 3, 2);
-//		OLED_ShowCHinese_32X32(70, 3, 3);
-//		OLED_ShowCHinese_32X32(90, 3, 8);
-//		OLED_ShowChar(120, 4, 'H', 0);
+//#define  DISPLAY_SHI_LIAN_TIMER			\
+//	{									\
+//		OLED_ShowCHinese_32X32(9, 3, 0);\
+//		OLED_ShowCHinese_32X32(29, 3, 1);\
+//		OLED_ShowCHinese_32X32(49, 3, 2);\
+//		OLED_ShowCHinese_32X32(69, 3, 3);\
+//		OLED_ShowCHinese_32X32(89, 3, 8);\
+//		OLED_ShowChar(120, 4, 'H', 0);\
+//}
 	
 
 //-----------------OLED IIC端口定义----------------  					   

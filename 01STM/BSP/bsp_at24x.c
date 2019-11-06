@@ -420,10 +420,9 @@ u16 ReadEEpromHowHour(void)
 void ByHourDisplay(u16 hour_val)
 {
 	int cnt = 0;
-
 	while(hour_val)
 	{
-		OLED_ShowCHinese_32X32((90 - (cnt * 20)), 3, (hour_val % 10));
+		OLED_ShowCHinese_32X32((89 - (cnt * 20)), 3, (hour_val % 10));
 		hour_val /= 10;
 		cnt++;
 	}
@@ -441,7 +440,7 @@ void EEPROM_check(void)
 //EEPROM init 
 void EEPROM_init(void)
 {
-	OLED_ShowCHinese_32X32(90, 3, 0);
+	OLED_ShowCHinese_32X32(89, 3, 0);
 	EEPROM_check();
 }
 

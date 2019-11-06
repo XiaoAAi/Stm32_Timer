@@ -3,7 +3,11 @@ extern bool flag_save_eeprom;
 extern bool flag_checkout;
 
 #define OPEN_TIP	BEEP_ON			\
-					delay_ms(300);	\
+					delay_ms(200);	\
+					BEEP_OFF		\
+					delay_ms(200);	\
+					BEEP_ON			\
+					delay_ms(200);	\
 					BEEP_OFF
 
 int main(void)
@@ -22,6 +26,7 @@ int main(void)
 	//初始化OLED
 	OLED_Init();
 	OLED_Clear();
+	
 	DISPLAY_SHI_LIAN_TIMER
 	
 	EEPROM_init();
